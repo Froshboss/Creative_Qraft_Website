@@ -235,7 +235,7 @@ const blogPosts = [
     date: "2024-12-22",
     author: "David Kim",
     authorInitials: "DK",
-    image: "assets/A High-Impact Visual Identity for "Compacta".jpeg",
+    image: "assets/A High-Impact Visual Identity for \"Compacta\".jpeg",
     readingTime: 4
   }
 ]
@@ -277,20 +277,20 @@ function renderBlogPosts() {
   blogGrid.innerHTML = postsToShow.map(post => `
     <article class="blog-card" data-id="${post.id}">
       <div class="blog-card-image">
-        ${post.image ? `<img src="${post.image}" alt="${post.title}" onerror="this.parentElement.innerHTML='📝'">` : '📝'}
+        ${post.image ? `<img src="${escapeHtmlAttribute(post.image)}" alt="${escapeHtmlAttribute(post.title)}" onerror="this.parentElement.innerHTML='📝'">` : '📝'}
       </div>
       <div class="blog-content">
         <div class="blog-meta">
           <span class="blog-date">${formatDate(post.date)}</span>
-          <span class="blog-category">${post.category}</span>
+          <span class="blog-category">${escapeHtml(post.category)}</span>
           <span class="blog-reading-time">⏱ ${post.readingTime} min read</span>
         </div>
-        <h3>${post.title}</h3>
-        <p>${post.excerpt}</p>
+        <h3>${escapeHtml(post.title)}</h3>
+        <p>${escapeHtml(post.excerpt)}</p>
         <div class="blog-author">
-          <div class="blog-author-avatar">${post.authorInitials}</div>
+          <div class="blog-author-avatar">${escapeHtml(post.authorInitials)}</div>
           <div class="blog-author-info">
-            <div class="blog-author-name">${post.author}</div>
+            <div class="blog-author-name">${escapeHtml(post.author)}</div>
           </div>
         </div>
         <a href="#" class="read-more" data-id="${post.id}">Read More →</a>
@@ -443,18 +443,18 @@ function openPostModal(postId) {
   const contentParagraphs = post.content.split("\n\n").filter(p => p.trim())
 
   modalBody.innerHTML = `
-    ${post.image ? `<img src="${post.image}" alt="${post.title}" class="modal-image" onerror="this.style.display='none'">` : ""}
+    ${post.image ? `<img src="${escapeHtmlAttribute(post.image)}" alt="${escapeHtmlAttribute(post.title)}" class="modal-image" onerror="this.style.display='none'">` : ""}
     <div class="modal-header">
       <div class="modal-meta">
         <span class="blog-date">${formatDate(post.date)}</span>
-        <span class="blog-category">${post.category}</span>
+        <span class="blog-category">${escapeHtml(post.category)}</span>
         <span class="blog-reading-time">⏱ ${post.readingTime} min read</span>
       </div>
-      <h2 class="modal-title">${post.title}</h2>
+      <h2 class="modal-title">${escapeHtml(post.title)}</h2>
       <div class="blog-author">
-        <div class="blog-author-avatar">${post.authorInitials}</div>
+        <div class="blog-author-avatar">${escapeHtml(post.authorInitials)}</div>
         <div class="blog-author-info">
-          <div class="blog-author-name">${post.author}</div>
+          <div class="blog-author-name">${escapeHtml(post.author)}</div>
         </div>
       </div>
     </div>
@@ -462,10 +462,10 @@ function openPostModal(postId) {
       ${contentParagraphs.map(p => `<p>${formatContent(p)}</p>`).join("")}
     </div>
     <div class="modal-share">
-      <button class="share-btn" onclick="sharePost('${post.title}', '${window.location.href}')">
+      <button class="share-btn" data-post-id="${post.id}" data-share-type="post">
         📤 Share
       </button>
-      <button class="share-btn" onclick="copyLink('${window.location.href}')">
+      <button class="share-btn" data-share-type="link">
         🔗 Copy Link
       </button>
     </div>
@@ -478,13 +478,38 @@ function openPostModal(postId) {
         <div class="comment-input-group">
           <textarea id="commentText" rows="4" placeholder="Write a comment..."></textarea>
         </div>
-        <button class="submit-button" onclick="addComment(${post.id})">Post Comment</button>
+        <button class="submit-button" data-post-id="${post.id}">Post Comment</button>
       </div>
       <div id="comments-${post.id}" class="comments-list">
         ${getCommentsHTML(post.id)}
       </div>
     </div>
   `
+
+  // Add event listeners for share buttons
+  const shareButtons = modalBody.querySelectorAll(".share-btn")
+  shareButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.shareType === "post") {
+        const postId = parseInt(btn.dataset.postId)
+        const post = blogPosts.find(p => p.id === postId)
+        if (post) {
+          sharePost(post.title, window.location.href)
+        }
+      } else if (btn.dataset.shareType === "link") {
+        copyLink(window.location.href)
+      }
+    })
+  })
+
+  // Add event listener for comment submit button
+  const commentSubmitBtn = modalBody.querySelector(".submit-button")
+  if (commentSubmitBtn) {
+    commentSubmitBtn.addEventListener("click", () => {
+      const postId = parseInt(commentSubmitBtn.dataset.postId)
+      addComment(postId)
+    })
+  }
 
   modalOverlay.classList.add("active")
   document.body.style.overflow = "hidden"
@@ -506,8 +531,12 @@ function formatDate(dateString) {
 }
 
 // Format content (markdown-like formatting)
+// First escape HTML to prevent XSS, then apply formatting
 function formatContent(text) {
-  return text
+  // First escape all HTML entities
+  const escaped = escapeHtml(text)
+  // Then apply markdown-like formatting (safe because text is already escaped)
+  return escaped
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
     .replace(/^(\d+)\.\s/gm, "<strong>$1.</strong> ")
@@ -587,6 +616,16 @@ function escapeHtml(text) {
   const div = document.createElement("div")
   div.textContent = text
   return div.innerHTML
+}
+
+// Escape HTML for use in attributes (handles quotes and special chars)
+function escapeHtmlAttribute(text) {
+  const div = document.createElement("div")
+  div.textContent = text
+  return div.innerHTML
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/`/g, "&#x60;")
 }
 
 // Initialize blog when DOM is ready
