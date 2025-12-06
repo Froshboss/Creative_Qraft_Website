@@ -1,46 +1,9 @@
-<!-- Blog Section -->
-  <!-- <section class="blog" id="blog">
-    <div class="container">
-      <h2>Latest from Our Blog</h2>
-      <p class="section-subtitle">Insights and trends in design and marketing</p>
-      <div class="blog-grid">
-        <article class="blog-card">
-          <img src="/placeholder.svg?height=250&width=400" alt="Blog post">
-          <div class="blog-content">
-            <span class="blog-date">December 10, 2024</span>
-            <h3>Top Design Trends for 2024</h3>
-            <p>Discover the latest design trends shaping the digital landscape and how to apply them to your projects.</p>
-            <a href="#" class="read-more">Read More →</a>
-          </div>
-        </article>
-        <article class="blog-card">
-          <img src="/placeholder.svg?height=250&width=400" alt="Blog post">
-          <div class="blog-content">
-            <span class="blog-date">December 5, 2024</span>
-            <h3>Building Accessible Web Experiences</h3>
-            <p>Learn best practices for creating inclusive digital experiences that reach and engage all users.</p>
-            <a href="#" class="read-more">Read More →</a>
-          </div>
-        </article>
-        <article class="blog-card">
-          <img src="/placeholder.svg?height=250&width=400" alt="Blog post">
-          <div class="blog-content">
-            <span class="blog-date">November 28, 2024</span>
-            <h3>The Art of Strategic Branding</h3>
-            <p>Explore the key elements that make a brand memorable and how to craft your unique brand story.</p>
-            <a href="#" class="read-more">Read More →</a>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section> -->
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Blog - Creative Qraft</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -72,10 +35,59 @@
     </div>
   </nav>
 
+  <!-- Blog Header -->
+  <section class="blog-header">
+    <div class="container">
+      <h1>Our Blog</h1>
+      <p class="blog-subtitle">Insights, tips, and stories from the creative world</p>
+    </div>
+  </section>
 
+  <!-- Blog Search and Filters -->
+  <section class="blog-toolbar">
+    <div class="container">
+      <div class="toolbar-wrapper">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search articles..." />
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </div>
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-category="all">All</button>
+          <button class="filter-btn" data-category="design">Design</button>
+          <button class="filter-btn" data-category="development">Development</button>
+          <button class="filter-btn" data-category="marketing">Marketing</button>
+          <button class="filter-btn" data-category="tips">Tips</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- Blog Posts Grid -->
+  <section class="blog-section">
+    <div class="container">
+      <div id="blogGrid" class="blog-grid">
+        <!-- Blog posts will be dynamically inserted here -->
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination" id="pagination">
+        <!-- Pagination buttons will be dynamically inserted here -->
+      </div>
+    </div>
+  </section>
 
-
+  <!-- Post Modal -->
+  <div class="modal-overlay" id="postModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal">&times;</button>
+      <div class="modal-body" id="modalBody">
+        <!-- Post content will be inserted here -->
+      </div>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
