@@ -128,7 +128,8 @@ const blogPosts = [
     author: "Sarah Johnson",
     authorInitials: "SJ",
     image: "assets/digital product launch.png",
-    readingTime: 5
+    readingTime: 5,
+    status: "published"
   },
   {
     id: 2,
@@ -140,7 +141,8 @@ const blogPosts = [
     author: "Michael Chen",
     authorInitials: "MC",
     image: "assets/SaaS Development Company.jpeg",
-    readingTime: 7
+    readingTime: 7,
+    status: "published"
   },
   {
     id: 3,
@@ -152,7 +154,8 @@ const blogPosts = [
     author: "Emily Rodriguez",
     authorInitials: "ER",
     image: "assets/Digital marketing poster.jpeg",
-    readingTime: 6
+    readingTime: 6,
+    status: "published"
   },
   {
     id: 4,
@@ -164,7 +167,8 @@ const blogPosts = [
     author: "David Kim",
     authorInitials: "DK",
     image: "assets/Saas.png",
-    readingTime: 4
+    readingTime: 4,
+    status: "published"
   },
   {
     id: 5,
@@ -176,7 +180,8 @@ const blogPosts = [
     author: "Sarah Johnson",
     authorInitials: "SJ",
     image: "assets/Inspark- Branding I Brand Identity I Visual Design I Business Card.jpeg",
-    readingTime: 6
+    readingTime: 6,
+    status: "published"
   },
   {
     id: 6,
@@ -188,7 +193,8 @@ const blogPosts = [
     author: "Michael Chen",
     authorInitials: "MC",
     image: "assets/terminal-hacker-computer-ubuntu-wallpaper-preview.jpg",
-    readingTime: 5
+    readingTime: 5,
+    status: "published"
   },
   {
     id: 7,
@@ -200,7 +206,8 @@ const blogPosts = [
     author: "Emily Rodriguez",
     authorInitials: "ER",
     image: "assets/Instagram.jpeg",
-    readingTime: 8
+    readingTime: 8,
+    status: "published"
   },
   {
     id: 8,
@@ -212,7 +219,8 @@ const blogPosts = [
     author: "David Kim",
     authorInitials: "DK",
     image: "assets/wallpaperflare.com_wallpaper.jpg",
-    readingTime: 5
+    readingTime: 5,
+    status: "published"
   },
   {
     id: 9,
@@ -224,7 +232,8 @@ const blogPosts = [
     author: "Sarah Johnson",
     authorInitials: "SJ",
     image: "assets/ecommerce rebrand.png",
-    readingTime: 6
+    readingTime: 6,
+    status: "published"
   },
   {
     id: 10,
@@ -236,22 +245,74 @@ const blogPosts = [
     author: "David Kim",
     authorInitials: "DK",
     image: "assets/A High-Impact Visual Identity for \"Compacta\".jpeg",
-    readingTime: 4
+    readingTime: 4,
+    status: "published"
   }
 ]
 
 // Blog state
 let currentPage = 1
 const postsPerPage = 6
+let allBlogPosts = [...blogPosts]
 let filteredPosts = [...blogPosts]
 let currentCategory = "all"
 let currentSearch = ""
+let editingPostId = null
+
+// Load posts from localStorage on page load
+function loadPostsFromStorage() {
+  const storedPosts = localStorage.getItem("blogPosts")
+  if (storedPosts) {
+    try {
+      const parsedPosts = JSON.parse(storedPosts)
+      // Merge with default posts, avoiding duplicates by ID
+      const defaultIds = new Set(blogPosts.map(p => p.id))
+      const newPosts = parsedPosts.filter(p => !defaultIds.has(p.id))
+      allBlogPosts = [...blogPosts, ...newPosts]
+      // Sort by date (newest first)
+      allBlogPosts.sort((a, b) => new Date(b.date) - new Date(a.date))
+      filteredPosts = [...allBlogPosts]
+    } catch (e) {
+      console.error("Error loading posts from storage:", e)
+    }
+  }
+}
+
+// Save posts to localStorage
+function savePostsToStorage() {
+  // Only save user-created posts (those not in default blogPosts)
+  const defaultIds = new Set(blogPosts.map(p => p.id))
+  const userPosts = allBlogPosts.filter(p => !defaultIds.has(p.id))
+  localStorage.setItem("blogPosts", JSON.stringify(userPosts))
+}
+
+// Calculate reading time (average 200 words per minute)
+function calculateReadingTime(content) {
+  const words = content.split(/\s+/).length
+  const minutes = Math.ceil(words / 200)
+  return minutes || 1
+}
+
+// Generate author initials from name
+function generateInitials(name) {
+  if (!name) return "??"
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+  return name.substring(0, 2).toUpperCase()
+}
 
 // Initialize blog
 function initBlog() {
-  renderBlogPosts()
-  setupEventListeners()
-  setupPagination()
+  try {
+    loadPostsFromStorage()
+    renderBlogPosts()
+    setupEventListeners()
+    setupPagination()
+  } catch (error) {
+    console.error("Error initializing blog:", error)
+  }
 }
 
 // Render blog posts
@@ -322,11 +383,17 @@ function setupEventListeners() {
   }
 
   // Category filters
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
+  const filterButtons = document.querySelectorAll(".filter-btn")
+  if (filterButtons.length === 0) {
+    console.error("Filter buttons not found!")
+  }
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"))
       btn.classList.add("active")
-      currentCategory = btn.dataset.category
+      currentCategory = btn.dataset.category || "all"
       currentPage = 1
       filterPosts()
     })
@@ -352,13 +419,67 @@ function setupEventListeners() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closePostModal()
+      closeCreatePostModal()
     }
   })
+
+  // Create post button
+  const createPostBtn = document.getElementById("createPostBtn")
+  if (createPostBtn) {
+    createPostBtn.addEventListener("click", (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      try {
+        openCreatePostModal()
+      } catch (error) {
+        console.error("Error opening create post modal:", error)
+        alert("Error opening create post form. Please check the console for details.")
+      }
+    })
+  } else {
+    console.error("Create Post button not found! Make sure the button exists in the HTML.")
+  }
+
+  // Close create post modal
+  const closeCreateModal = document.getElementById("closeCreateModal")
+  const createPostModal = document.getElementById("createPostModal")
+  
+  if (closeCreateModal) {
+    closeCreateModal.addEventListener("click", closeCreatePostModal)
+  }
+  
+  if (createPostModal) {
+    createPostModal.addEventListener("click", (e) => {
+      if (e.target === createPostModal) {
+        closeCreatePostModal()
+      }
+    })
+  }
+
+  // Create post form
+  const createPostForm = document.getElementById("createPostForm")
+  if (createPostForm) {
+    createPostForm.addEventListener("submit", (e) => {
+      e.preventDefault()
+      publishPost()
+    })
+  }
+
+  // Save draft button
+  const saveDraftBtn = document.getElementById("saveDraftBtn")
+  if (saveDraftBtn) {
+    saveDraftBtn.addEventListener("click", () => {
+      savePostAsDraft()
+    })
+  }
 }
 
 // Filter posts
 function filterPosts() {
-  filteredPosts = blogPosts.filter(post => {
+  filteredPosts = allBlogPosts.filter(post => {
+    // Only show published posts (not drafts)
+    if (post.status === "draft") return false
+    
     const matchesCategory = currentCategory === "all" || post.category === currentCategory
     const matchesSearch = !currentSearch || 
       post.title.toLowerCase().includes(currentSearch) ||
@@ -432,7 +553,7 @@ function setupPagination() {
 
 // Open post modal
 function openPostModal(postId) {
-  const post = blogPosts.find(p => p.id === postId)
+  const post = allBlogPosts.find(p => p.id === postId)
   if (!post) return
 
   const modalBody = document.getElementById("modalBody")
@@ -492,7 +613,7 @@ function openPostModal(postId) {
     btn.addEventListener("click", () => {
       if (btn.dataset.shareType === "post") {
         const postId = parseInt(btn.dataset.postId)
-        const post = blogPosts.find(p => p.id === postId)
+        const post = allBlogPosts.find(p => p.id === postId)
         if (post) {
           sharePost(post.title, window.location.href)
         }
@@ -626,6 +747,191 @@ function escapeHtmlAttribute(text) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#x27;")
     .replace(/`/g, "&#x60;")
+}
+
+// Open create post modal
+function openCreatePostModal(postId = null) {
+  const modal = document.getElementById("createPostModal")
+  const form = document.getElementById("createPostForm")
+  const title = document.getElementById("createPostTitle")
+  
+  if (!modal) {
+    console.error("Create post modal not found! Check HTML for id='createPostModal'")
+    alert("Error: Create post modal not found. Please refresh the page.")
+    return
+  }
+  if (!form) {
+    console.error("Create post form not found! Check HTML for id='createPostForm'")
+    return
+  }
+
+  editingPostId = postId
+  const formTitle = document.getElementById("postTitle")
+  const formCategory = document.getElementById("postCategory")
+  const formExcerpt = document.getElementById("postExcerpt")
+  const formContent = document.getElementById("postContent")
+  const formAuthor = document.getElementById("postAuthor")
+  const formImage = document.getElementById("postImage")
+
+  if (postId) {
+    // Editing existing post
+    const post = allBlogPosts.find(p => p.id === postId)
+    if (post) {
+      title.textContent = "Edit Blog Post"
+      formTitle.value = post.title
+      formCategory.value = post.category
+      formExcerpt.value = post.excerpt
+      formContent.value = post.content
+      formAuthor.value = post.author
+      formImage.value = post.image || ""
+    }
+  } else {
+    // Creating new post
+    title.textContent = "Create New Blog Post"
+    form.reset()
+  }
+
+  modal.classList.add("active")
+  document.body.style.overflow = "hidden"
+}
+
+// Close create post modal
+function closeCreatePostModal() {
+  const modal = document.getElementById("createPostModal")
+  if (modal) {
+    modal.classList.remove("active")
+    document.body.style.overflow = ""
+    editingPostId = null
+    const form = document.getElementById("createPostForm")
+    if (form) {
+      form.reset()
+    }
+  }
+}
+
+// Publish post
+function publishPost() {
+  const form = document.getElementById("createPostForm")
+  if (!form) return
+
+  const formData = {
+    title: document.getElementById("postTitle").value.trim(),
+    category: document.getElementById("postCategory").value,
+    excerpt: document.getElementById("postExcerpt").value.trim(),
+    content: document.getElementById("postContent").value.trim(),
+    author: document.getElementById("postAuthor").value.trim(),
+    image: document.getElementById("postImage").value.trim() || null
+  }
+
+  // Validation
+  if (!formData.title || !formData.category || !formData.excerpt || !formData.content || !formData.author) {
+    alert("Please fill in all required fields.")
+    return
+  }
+
+  const readingTime = calculateReadingTime(formData.content)
+  const authorInitials = generateInitials(formData.author)
+  const currentDate = new Date().toISOString().split("T")[0]
+
+  if (editingPostId) {
+    // Update existing post
+    const postIndex = allBlogPosts.findIndex(p => p.id === editingPostId)
+    if (postIndex !== -1) {
+      allBlogPosts[postIndex] = {
+        ...allBlogPosts[postIndex],
+        ...formData,
+        readingTime,
+        authorInitials,
+        date: currentDate,
+        status: "published"
+      }
+    }
+  } else {
+    // Create new post
+    const newId = Math.max(...allBlogPosts.map(p => p.id), 0) + 1
+    const newPost = {
+      id: newId,
+      ...formData,
+      readingTime,
+      authorInitials,
+      date: currentDate,
+      status: "published"
+    }
+    allBlogPosts.unshift(newPost) // Add to beginning
+  }
+
+  // Save to localStorage
+  savePostsToStorage()
+  
+  // Refresh the display
+  filterPosts()
+  
+  // Close modal
+  closeCreatePostModal()
+  
+  // Show success message
+  alert(editingPostId ? "Post updated successfully!" : "Post published successfully!")
+}
+
+// Save post as draft
+function savePostAsDraft() {
+  const form = document.getElementById("createPostForm")
+  if (!form) return
+
+  const formData = {
+    title: document.getElementById("postTitle").value.trim(),
+    category: document.getElementById("postCategory").value,
+    excerpt: document.getElementById("postExcerpt").value.trim(),
+    content: document.getElementById("postContent").value.trim(),
+    author: document.getElementById("postAuthor").value.trim(),
+    image: document.getElementById("postImage").value.trim() || null
+  }
+
+  // Validation - drafts can have empty fields
+  if (!formData.title) {
+    alert("Please at least enter a title for the draft.")
+    return
+  }
+
+  const readingTime = formData.content ? calculateReadingTime(formData.content) : 1
+  const authorInitials = formData.author ? generateInitials(formData.author) : "??"
+  const currentDate = new Date().toISOString().split("T")[0]
+
+  if (editingPostId) {
+    // Update existing draft
+    const postIndex = allBlogPosts.findIndex(p => p.id === editingPostId)
+    if (postIndex !== -1) {
+      allBlogPosts[postIndex] = {
+        ...allBlogPosts[postIndex],
+        ...formData,
+        readingTime,
+        authorInitials,
+        date: currentDate,
+        status: "draft"
+      }
+    }
+  } else {
+    // Create new draft
+    const newId = Math.max(...allBlogPosts.map(p => p.id), 0) + 1
+    const newPost = {
+      id: newId,
+      ...formData,
+      readingTime,
+      authorInitials,
+      date: currentDate,
+      status: "draft"
+    }
+    allBlogPosts.unshift(newPost)
+  }
+
+  // Save to localStorage
+  savePostsToStorage()
+  
+  // Close modal
+  closeCreatePostModal()
+  
+  // Show success message
+  alert("Draft saved successfully!")
 }
 
 // Initialize blog when DOM is ready

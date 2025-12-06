@@ -54,12 +54,21 @@
             <path d="m21 21-4.35-4.35"></path>
           </svg>
         </div>
-        <div class="filter-buttons">
-          <button class="filter-btn active" data-category="all">All</button>
-          <button class="filter-btn" data-category="design">Design</button>
-          <button class="filter-btn" data-category="development">Development</button>
-          <button class="filter-btn" data-category="marketing">Marketing</button>
-          <button class="filter-btn" data-category="tips">Tips</button>
+        <div class="toolbar-actions">
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="design">Design</button>
+            <button class="filter-btn" data-category="development">Development</button>
+            <button class="filter-btn" data-category="marketing">Marketing</button>
+            <button class="filter-btn" data-category="tips">Tips</button>
+          </div>
+          <button class="create-post-btn" id="createPostBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Post
+          </button>
         </div>
       </div>
     </div>
@@ -85,6 +94,56 @@
       <button class="modal-close" id="closeModal">&times;</button>
       <div class="modal-body" id="modalBody">
         <!-- Post content will be inserted here -->
+      </div>
+    </div>
+  </div>
+  <!-- Create/Edit Post Modal -->
+  <div class="modal-overlay" id="createPostModal">
+    <div class="modal-content create-post-modal">
+      <button class="modal-close" id="closeCreateModal">&times;</button>
+      <div class="modal-body">
+        <h2 class="create-post-title" id="createPostTitle">Create New Blog Post</h2>
+        <form id="createPostForm" class="create-post-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="postTitle">Title *</label>
+              <input type="text" id="postTitle" name="title" required placeholder="Enter post title" />
+            </div>
+            <div class="form-group">
+              <label for="postCategory">Category *</label>
+              <select id="postCategory" name="category" required>
+                <option value="">Select category</option>
+                <option value="design">Design</option>
+                <option value="development">Development</option>
+                <option value="marketing">Marketing</option>
+                <option value="tips">Tips</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="postExcerpt">Excerpt *</label>
+            <textarea id="postExcerpt" name="excerpt" rows="3" required placeholder="Brief description of the post"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="postContent">Content *</label>
+            <textarea id="postContent" name="content" rows="12" required placeholder="Write your blog post content here. Use **bold** for bold text and *italic* for italic text."></textarea>
+            <small class="form-hint">Use **text** for bold and *text* for italic formatting</small>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="postAuthor">Author Name *</label>
+              <input type="text" id="postAuthor" name="author" required placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label for="postImage">Image URL</label>
+              <input type="text" id="postImage" name="image" placeholder="https://example.com/image.jpg" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="saveDraftBtn">Save as Draft</button>
+            <button type="submit" class="btn-primary">Publish Post</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
