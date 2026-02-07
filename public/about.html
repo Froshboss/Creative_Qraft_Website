@@ -3,25 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>About Us | Creative Qraft Agency</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<!-- Navigation -->
   <nav class="navbar">
     <div class="container">
       <div class="nav-wrapper">
-        <div class="logo">
+        <a href="index.html" class="logo">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="8" fill="currentColor" opacity="0.1"/>
-            <text x="16" y="22" font-size="18" font-weight="bold" text-anchor="middle" fill="currentColor">CQ</text>
+            <rect width="32" height="32" rx="8" fill="var(--accent)" opacity="0.1"/>
+            <text x="16" y="22" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--accent)">CQ</text>
           </svg>
           <span>Creative Qraft</span>
-        </div>
+        </a>
         <button class="menu-toggle" id="menuToggle">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </button>
         <ul class="nav-links" id="navLinks">
           <li><a href="index.html">Home</a></li>
@@ -35,76 +32,74 @@
     </div>
   </nav>
 
-    <!-- About Section -->
-  <section class="about" id="about">
+  <section class="about-hero">
     <div class="container">
-      <div class="about-content">
-        <div class="about-text">
-          <h2>About CreativeQraft-</h2>
-          <p>We are a team of creative professionals dedicated to delivering exceptional results for our clients. With over 10 years of experience in the industry, we've helped hundreds of brands stand out and succeed.</p>
-          <p>Our passion is creating beautiful, functional designs that drive real business results. We believe in collaboration, innovation, and pushing creative boundaries.</p>
+      <div class="about-grid">
+        <div class="about-text-main">
+          <span class="badge">Our Story</span>
+          <h1>Human-Centric Design Meets <span class="text-gradient">Technical Precision</span></h1>
+          <p>Creative Qraft is a collective of designers and engineers driven by a single mission: to build digital products that people actually love to use. We don't just "build websites"—we craft experiences.</p>
         </div>
-        <div class="team-grid">
-          <div class="team-member">
-            <img src="Images/venom.jpg" alt="Team Member 1">
-            <h3>Mukthar Ishaq</h3>
-                    <p>Lead Designer</p>
-                    <p>With over six years of experience in graphic and branding design, Mukthar loves turning ideas into designs that connect with people. As a consultant, he focuses on creating intuitive and engaging user experiences that look great and get results. Her expertise spans from mobile app design to complex web platforms.</p>
+        <div class="about-stats">
+          <div class="stat-item">
+            <span class="stat-number">100+</span>
+            <p>Projects Delivered</p>
           </div>
-          <div class="team-member">
-            <img src="Images/ICE_1429~2.png" alt="Team Member 2">
-            <h3>Jibril Yakubu</h3>
-                    <p>Backend Developer</p>
-                    <p>Jibril is our backend developer who makes sure everything behind the scenes runs smoothly. He’s passionate about creating secure, fast, and scalable systems that keep our products performing at their best. She's worked with startups and Fortune 500 companies alike.</p>
-          </div>
-          <div class="team-member">
-            <img src="Images/frosh.jpg" alt="Team Member 3">
-           <h3>Umar Alhassan</h3>
-                    <p>Senior Developer</p>
-                    <p>Umar is a frontend developer with a knack for turning great designs into high-performing digital experiences. Known as our technical wizard, he combines modern web technologies with clean code to ensure every solution is fast, scalable, and built to last. His skills include React, Node.js, and cloud architecture.</p>
+          <div class="stat-item">
+            <span class="stat-number">6+</span>
+            <p>Years Experience</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-
-  <!-- Footer -->
-  <footer class="footer">
+  <section class="team-section">
     <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>Creative Qraft</h3>
-          <p>Creative excellence in every project</p>
+      <h2 class="section-title">The Minds Behind the Qraft</h2>
+      <div class="team-grid">
+        <div class="team-member">
+          <div class="member-image">
+            <img src="assets/venom.jpg" alt="Mukthar Ishaq">
+          </div>
+          <div class="member-info">
+            <h3>Mukthar Ishaq</h3>
+            <span class="role">Lead Designer & Consultant</span>
+            <p>A branding specialist with over 6 years of experience. Mukthar focuses on creating intuitive user experiences that bridge the gap between beauty and business results.</p>
+          </div>
         </div>
-        <div class="footer-section">
-          <h4>Quick Links</h4>
-          <ul>
-            <li><a href="home.html">Home</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="portfolio.html">Portfolio</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="blog.html">Blog</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          </ul>
+        <div class="team-member">
+          <div class="member-image">
+            <img src="assets/ICE_1429~2.png" alt="Jibril Yakubu">
+          </div>
+          <div class="member-info">
+            <h3>Jibril Yakubu</h3>
+            <span class="role">Backend Developer</span>
+            <p>The architect of our systems. Jibril ensures every project is secure, fast, and scalable, specializing in complex server-side logic and database management.</p>
+          </div>
         </div>
-        <div class="footer-section">
-          <h4>Follow Us</h4>
-          <div class="social-links">
-            <a href="#" aria-label="LinkedIn">in</a>
-            <a href="#" aria-label="Twitter">𝕏</a>
-            <a href="#" aria-label="Instagram">📷</a>
-            <a href="#" aria-label="Dribbble">🎯</a>
+        <div class="team-member">
+          <div class="member-image">
+            <img src="assets/frosh.jpg" alt="Umar Alhassan">
+          </div>
+          <div class="member-info">
+            <h3>Umar Alhassan</h3>
+            <span class="role">Frontend Developer</span>
+            <p>Our technical wizard. Umar turns complex designs into pixel-perfect, high-performing code using modern web technologies like React and cloud architecture.</p>
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
       <div class="footer-bottom">
-        <p>&copy; 2025 CreativeQraft-. All rights reserved.</p>
+        <p>&copy; 2026 Creative Qraft. Built with Passion.</p>
       </div>
     </div>
   </footer>
 
-  
   <script src="script.js"></script>
-  </body>
+</body>
 </html>
